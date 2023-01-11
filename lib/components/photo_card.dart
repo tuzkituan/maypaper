@@ -13,7 +13,7 @@ class PhotoCard extends StatefulWidget {
 }
 
 class _PhotoCardState extends State<PhotoCard> {
-  Widget _renderDetail(photo) {
+  Widget _renderDetail(photo, context) {
     return Container(
       decoration: const BoxDecoration(
           // color: Colors.black,
@@ -26,6 +26,7 @@ class _PhotoCardState extends State<PhotoCard> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5.0),
               child: CachedNetworkImage(
+                height: MediaQuery.of(context).size.height * 0.3,
                 imageUrl: photo.src!.medium ?? "",
                 placeholder: (context, url) => Center(
                   child: Container(),
@@ -51,6 +52,21 @@ class _PhotoCardState extends State<PhotoCard> {
           const Text(
             'Author',
             style: TextStyle(color: Colors.black),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          const Spacer(),
+          ElevatedButton(
+            onPressed: () {
+              widget.onDownload(photo);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size.fromHeight(50), // NEW
+              backgroundColor: Colors.teal,
+            ),
+            child: const Text('DOWNLOAD'),
           )
         ],
       ),
@@ -67,12 +83,15 @@ class _PhotoCardState extends State<PhotoCard> {
           onTap: () {
             showModalBottomSheet(
               context: context,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
+                ),
               ),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               builder: (context) {
-                return _renderDetail(widget.photo);
+                return _renderDetail(widget.photo, context);
               },
             );
           },

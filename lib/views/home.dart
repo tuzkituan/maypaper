@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     final homePageProvider =
         Provider.of<HomePageProvider>(context, listen: false);
     return homePageProvider
-        .getImages({"query": "chill", "page": _page.toString()});
+        .getImages({"query": "white", "page": _page.toString()});
   }
 
   Future<dynamic> _fetchData() async {
