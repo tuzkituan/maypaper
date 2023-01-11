@@ -1,0 +1,3 @@
+String APP_NAME = 'MAYPAPER';
+String BASE_URL_API = 'api.pexels.com';
+String API_KEY = '563492ad6f917000010000017e9b1d12ace7476b8b1f52c152135e89';

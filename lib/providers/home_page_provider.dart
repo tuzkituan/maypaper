@@ -1,43 +1,37 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:maypaper/models/photo_model.dart';
+import 'package:maypaper/services/home_page_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePageProvider with ChangeNotifier {
   late SharedPreferences prefs;
+  final HomePageService _homePageService = HomePageService();
+
+  late List<Photos> photos = [];
 
   // functions
-  Future<dynamic> getBanners() async {
-    // try {
-    //   isLoading = true;
-    //   notifyListeners();
-    //   dynamic response = await _homePageService.getPost({"postType": "BANNER"});
-    //   isLoading = false;
-    //   notifyListeners();
+  Future<dynamic> getImages(dynamic params) async {
+    try {
+      print('page' + params['page'].toString());
+      notifyListeners();
+      dynamic response = await _homePageService.getImages(params);
+      notifyListeners();
+      log('Get images successfully');
 
-    //   final statusCode = response['statusCode'];
-    //   switch (statusCode) {
-    //     case 200:
-    //       log('get banner successfully');
-    //       final List<BannerModel> loadedBanners = [];
-    //       response['data'].forEach((item) {
-    //         loadedBanners.add(BannerModel.fromJson(item));
-    //       });
-    //       banners = loadedBanners;
-    //       notifyListeners();
-    //       return response;
-    //     case 401:
-    //       return null;
-    //     default:
-    //       log('error get banner');
-    //       notifyListeners();
-    //       return {'statusCode': statusCode, 'message': response['message']};
-    //   }
-    // } catch (e) {
-    //   log(e.toString());
-    //   notifyListeners();
-    //   return e.toString();
-    // }
+      List<Photos> photosTemp = [];
+      response['photos'].forEach((item) {
+        photosTemp.add(Photos.fromJson(item));
+      });
+
+      photos = [...photos, ...photosTemp];
+    } catch (e) {
+      log(e.toString());
+      notifyListeners();
+      return e.toString();
+    }
   }
 }

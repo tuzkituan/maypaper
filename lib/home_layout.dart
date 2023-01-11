@@ -1,4 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:maypaper/components/fade_indexed_stack.dart';
 import 'package:maypaper/models/theme_model.dart';
@@ -35,43 +36,28 @@ class _HomeLayoutState extends State<HomeLayout> with TickerProviderStateMixin {
     bool isDarkMode = Provider.of<ThemeModel>(context).isDark;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
         // toolbarHeight: 0,
         title: const Text(
           'MAYPAPER',
-          style: TextStyle(letterSpacing: 3, fontSize: 14),
+          style: TextStyle(
+            letterSpacing: 3,
+            fontSize: 14,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.black,
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (index) {
-            setState(() {
-              // now check if the chosen page has already been built
-              // if it hasn't, then it still is a SizedBox
-              if (_pages[index] is SizedBox) {
-                if (index == 1) {
-                  _pages[index] = Container(
-                    key: MyKeys.getKeys().elementAt(index),
-                  );
-                }
-              }
-
-              _currentIndex = index;
-            });
-          },
-          tabs: const <Widget>[
-            Tab(
-              icon: Icon(Icons.cloud_outlined),
+        backgroundColor: Colors.white.withOpacity(0.8),
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              color: Colors.transparent,
             ),
-            Tab(
-              icon: Icon(Icons.beach_access_sharp),
-            ),
-            Tab(
-              icon: Icon(Icons.brightness_5_sharp),
-            ),
-          ],
+          ),
         ),
       ),
       body: WillPopScope(

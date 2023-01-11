@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:maypaper/models/theme_model.dart';
 import 'package:maypaper/providers/home_page_provider.dart';
 import 'package:maypaper/home_layout.dart';
+import 'package:maypaper/utils/globals.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -62,7 +63,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'MAYPAPER',
-            // scaffoldMessengerKey: snackbarKey,
+            scaffoldMessengerKey: snackbarKey,
             themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),

@@ -1,5 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:maypaper/components/photo_card.dart';
+import 'package:maypaper/models/photo_model.dart';
+import 'package:maypaper/providers/home_page_provider.dart';
+import 'package:maypaper/utils/custom_snack_bar.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,29 +18,134 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late ScrollController scrollController;
+  late String _localPath;
+  late bool _permissionReady;
+  late TargetPlatform? platform;
+
+  var _page = 1;
+
+  Future<dynamic> _fetchImages() {
+    final homePageProvider =
+        Provider.of<HomePageProvider>(context, listen: false);
+    return homePageProvider
+        .getImages({"query": "chill", "page": _page.toString()});
+  }
+
+  Future<dynamic> _fetchData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _fetchImages();
+    });
+  }
+
+  void _scrollListener() {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      setState(() {
+        _page = _page + 1;
+      });
+      _fetchImages();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController = ScrollController()..addListener(_scrollListener);
+    _fetchData();
+
+    if (Platform.isAndroid) {
+      platform = TargetPlatform.android;
+    } else {
+      platform = TargetPlatform.iOS;
+    }
+  }
+
+  Future<bool> _checkPermission() async {
+    if (platform == TargetPlatform.android) {
+      final status = await Permission.storage.status;
+      if (status != PermissionStatus.granted) {
+        final result = await Permission.storage.request();
+        if (result == PermissionStatus.granted) {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> _prepareSaveDir() async {
+    _localPath = (await _findLocalPath())!;
+
+    print(_localPath);
+    final savedDir = Directory(_localPath);
+    bool hasExisted = await savedDir.exists();
+    if (!hasExisted) {
+      savedDir.create();
+    }
+  }
+
+  Future<String?> _findLocalPath() async {
+    if (platform == TargetPlatform.android) {
+      return "/sdcard/download/";
+    } else {
+      var directory = await getApplicationDocumentsDirectory();
+      return '${directory.path}${Platform.pathSeparator}Download';
+    }
+  }
+
+  String getExt(String url) {
+    if (url.contains('jpg')) return 'jpg';
+    if (url.contains('jpeg')) return 'jpeg';
+    if (url.contains('png')) return 'png';
+    if (url.contains('gif')) return 'gif';
+    return 'jpg';
+  }
+
+  void onDownload(Photos photo) async {
+    if (photo.src!.original!.isEmpty) return;
+
+    _permissionReady = await _checkPermission();
+    if (_permissionReady) {
+      await _prepareSaveDir();
+      showSnackBar("Downloading...", 'info');
+      try {
+        await Dio().download(photo.src!.original!,
+            "$_localPath/${photo.id}.${getExt(photo.src!.original!)}");
+        showSnackBar("Downloaded", 'success');
+      } catch (e) {
+        showSnackBar("Download failed", 'error');
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    scrollController.removeListener(_scrollListener);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final list = [
-      'https://images.unsplash.com/photo-1670844763152-81c99a307cf4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80',
-      'https://images.unsplash.com/photo-1672061802594-c9d39638679e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
-      'https://images.unsplash.com/photo-1672059239159-7f994819dfe5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
-      'https://images.unsplash.com/photo-1672250679463-1e1f85ea4cdc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
-    ];
+    var homePageProvider = Provider.of<HomePageProvider>(context);
+    List<Photos>? photos = homePageProvider.photos;
 
     return ListView.separated(
       // physics: NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(0),
-      itemCount: list.length,
+      padding: const EdgeInsets.only(top: 0),
+      itemCount: photos.length,
+      controller: scrollController,
       itemBuilder: (BuildContext context, int index) {
-        return CachedNetworkImage(
-          imageUrl: list[index],
-          // placeholder: (context, url) => const Center(
-          //   child: CircularProgressIndicator(),
-          // ),
-          errorWidget: (context, url, error) => const Icon(Icons.error),
-        );
+        return PhotoCard(photo: photos[index], onDownload: onDownload);
       },
-      separatorBuilder: (BuildContext context, int index) => Container(),
+      separatorBuilder: (BuildContext context, int index) => const Divider(
+        height: 0.5,
+        color: Colors.black12,
+      ),
     );
   }
 }

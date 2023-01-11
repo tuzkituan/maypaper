@@ -1,19 +1,17 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:maypaper/utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpService {
   static Future<dynamic> getAPI(String url, final params) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = (prefs.getString('token') ?? "").toString();
-
     return http.get(
-      Uri.https('link', url, params),
+      Uri.https(BASE_URL_API, url, params),
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $API_KEY',
       },
     ).then((http.Response response) {
       final int statusCode = response.statusCode;
