@@ -36,6 +36,18 @@ class _PhotoCardState extends State<PhotoCard> {
           ),
         ),
         Positioned(
+          bottom: 16,
+          left: 16,
+          child: Text(
+            photo.photographer!,
+            style: const TextStyle(
+              color: Colors.white38,
+              fontSize: 10,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+        Positioned(
           bottom: 3,
           right: 3,
           child: IconButton(

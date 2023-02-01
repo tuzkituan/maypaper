@@ -13,14 +13,14 @@ class HomePageProvider with ChangeNotifier {
 
   late List<Photos> photos = [];
   bool? isLoadingFetch = false;
-  String? prevSearchVal;
+  String prevSearchVal = '';
 
   // functions
   Future<dynamic> getImages(dynamic params) async {
     try {
       print('page' + params['page'].toString());
       String currentSearchVal = params['query'];
-      if (prevSearchVal != currentSearchVal) {
+      if (prevSearchVal != currentSearchVal && currentSearchVal.isNotEmpty) {
         photos = [];
         prevSearchVal = currentSearchVal;
       }
