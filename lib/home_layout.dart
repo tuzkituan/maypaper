@@ -41,15 +41,15 @@ class _HomeLayoutState extends State<HomeLayout> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
         elevation: 0,
-        toolbarHeight: 40,
+        // toolbarHeight: 40,
         title: Text(
           searchController.text.isNotEmpty ? searchController.text : 'maypaper',
           style: const TextStyle(
             letterSpacing: 3,
-            fontSize: 14,
+            fontSize: 16,
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -65,7 +65,7 @@ class _HomeLayoutState extends State<HomeLayout> with TickerProviderStateMixin {
             icon: const Icon(
               Icons.search,
               color: Colors.white,
-              size: 18,
+              size: 20,
             ),
           ),
         ],
