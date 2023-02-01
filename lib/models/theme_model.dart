@@ -21,7 +21,7 @@ class ThemeModel extends ChangeNotifier {
   bool get isDark => _isDark;
 
   ThemeModel() {
-    _isDark = false;
+    _isDark = true;
     _preferences = ThemePreferences();
     getPreferences();
   }

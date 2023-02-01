@@ -12,13 +12,22 @@ class HomePageProvider with ChangeNotifier {
   final HomePageService _homePageService = HomePageService();
 
   late List<Photos> photos = [];
+  bool? isLoadingFetch = false;
+  String? prevSearchVal;
 
   // functions
   Future<dynamic> getImages(dynamic params) async {
     try {
       print('page' + params['page'].toString());
+      String currentSearchVal = params['query'];
+      if (prevSearchVal != currentSearchVal) {
+        photos = [];
+        prevSearchVal = currentSearchVal;
+      }
+      isLoadingFetch = true;
       notifyListeners();
       dynamic response = await _homePageService.getImages(params);
+      isLoadingFetch = false;
       notifyListeners();
       log('Get images successfully');
 

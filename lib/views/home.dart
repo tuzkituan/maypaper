@@ -11,7 +11,15 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  HomePage(
+      {super.key,
+      required this.fetchImages,
+      required this.page,
+      required this.onIncPage});
+
+  late Function() fetchImages;
+  late Function() onIncPage;
+  num? page;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -23,28 +31,11 @@ class _HomePageState extends State<HomePage> {
   late bool _permissionReady;
   late TargetPlatform? platform;
 
-  var _page = 1;
-
-  Future<dynamic> _fetchImages() {
-    final homePageProvider =
-        Provider.of<HomePageProvider>(context, listen: false);
-    return homePageProvider
-        .getImages({"query": "white", "page": _page.toString()});
-  }
-
-  Future<dynamic> _fetchData() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _fetchImages();
-    });
-  }
-
   void _scrollListener() {
     if (scrollController.position.pixels ==
         scrollController.position.maxScrollExtent) {
-      setState(() {
-        _page = _page + 1;
-      });
-      _fetchImages();
+      widget.onIncPage();
+      widget.fetchImages();
     }
   }
 
@@ -52,7 +43,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     scrollController = ScrollController()..addListener(_scrollListener);
-    _fetchData();
 
     if (Platform.isAndroid) {
       platform = TargetPlatform.android;
@@ -133,7 +123,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var homePageProvider = Provider.of<HomePageProvider>(context);
     List<Photos>? photos = homePageProvider.photos;
+    bool? isLoadingFetch = homePageProvider.isLoadingFetch;
 
+    if (isLoadingFetch == true && photos.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return ListView.separated(
       // physics: NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.only(top: 0),
