@@ -58,13 +58,13 @@ class _MyAppState extends State<MyApp> {
       ],
       child: Builder(
         builder: (context) {
-          final isDark = Provider.of<ThemeModel>(context).isDark;
+          // final isDark = Provider.of<ThemeModel>(context).isDark;
 
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'MAYPAPER',
             scaffoldMessengerKey: snackbarKey,
-            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            themeMode: ThemeMode.dark,
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
             home: const HomeLayout(),

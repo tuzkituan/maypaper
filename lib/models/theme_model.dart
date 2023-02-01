@@ -16,7 +16,7 @@ class ThemePreferences {
 }
 
 class ThemeModel extends ChangeNotifier {
-  late bool _isDark;
+  late bool _isDark = true;
   late ThemePreferences _preferences;
   bool get isDark => _isDark;
 
