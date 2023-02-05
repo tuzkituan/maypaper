@@ -1,3 +1,4 @@
 # maypaper
 
-Edit photos app
+An app to discover wallpapers, pictures,...
+Written on Flutter
