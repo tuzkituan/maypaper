@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:maypaper/utils/api.dart';
@@ -11,10 +12,11 @@ class HttpService {
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Bearer $API_KEY',
+        'Authorization': API_KEY,
       },
     ).then((http.Response response) {
       final int statusCode = response.statusCode;
+      log('response ${response.body.toString()}');
       if (statusCode < 200 || statusCode > 400) {
         throw Exception("Error while fetching data");
       }

@@ -32,10 +32,8 @@ class _HomeLayoutState extends State<HomeLayout> with TickerProviderStateMixin {
 
     print('search ' + searchValue);
 
-    return homePageProvider.getImages({
-      "query": searchValue.isEmpty ? "analog" : searchValue,
-      "page": _page.toString()
-    });
+    return homePageProvider
+        .getImages({"query": searchValue, "page": _page.toString()});
   }
 
   @override
